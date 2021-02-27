@@ -1,7 +1,7 @@
 package com.rifki.jetpackpro.mynoteapps.repository
 
 import android.app.Application
-import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import com.rifki.jetpackpro.mynoteapps.database.Note
 import com.rifki.jetpackpro.mynoteapps.database.NoteDao
 import com.rifki.jetpackpro.mynoteapps.database.NoteRoomDatabase
@@ -18,7 +18,9 @@ class NoteRepository(application: Application) {
         mNoteDao = db.noteDao()
     }
 
-    fun getAllNotes(): LiveData<List<Note>> = mNoteDao.getAllNotes()
+    fun getAllNotes(): DataSource.Factory<Int, Note> {
+        return mNoteDao.getAllNotes()
+    }
 
     fun insert(note: Note) {
         executorService.execute { mNoteDao.insert(note) }
