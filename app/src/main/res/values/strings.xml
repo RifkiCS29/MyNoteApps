@@ -23,4 +23,6 @@
     <string name="menu_latest">Latest</string>
     <string name="menu_oldest">Oldest</string>
     <string name="menu_random">Random</string>
+    <string name="message_undo_movie">Undo Delete ?</string>
+    <string name="undo">Undo</string>
 </resources>

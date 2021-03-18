@@ -9,13 +9,16 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.rifki.jetpackpro.mynoteapps.R
 import com.rifki.jetpackpro.mynoteapps.database.Note
 import com.rifki.jetpackpro.mynoteapps.databinding.ActivityMainBinding
 import com.rifki.jetpackpro.mynoteapps.helper.SortUtils
 import com.rifki.jetpackpro.mynoteapps.ui.insert.NoteAddUpdateActivity
+import com.rifki.jetpackpro.mynoteapps.ui.insert.NoteAddUpdateViewModel
 import com.rifki.jetpackpro.mynoteapps.viewmodel.ViewModelFactory
 
 class MainActivity : AppCompatActivity() {
@@ -25,9 +28,11 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var adapter: NotePagedListAdapter
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var noteAddUpdateViewModel: NoteAddUpdateViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        itemTouchHelper.attachToRecyclerView(binding?.rvNotes)
 
         _activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
@@ -92,6 +97,23 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
     }
+
+    private val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
+        override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int =
+                makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+
+        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean = true
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+//            if (binding?.root != null) {
+//                val swipedPosition = viewHolder.adapterPosition
+//                val noteEntity = adapter.getSwipedData(swipedPosition)
+//                noteEntity?.let { noteAddUpdateViewModel.delete(it) }
+//
+//                showSnackbarMessage(getString(R.string.deleted))
+//            }
+        }
+    })
 
     private fun showSnackbarMessage(message: String) {
         Snackbar.make(binding?.root as View, message, Snackbar.LENGTH_SHORT).show()

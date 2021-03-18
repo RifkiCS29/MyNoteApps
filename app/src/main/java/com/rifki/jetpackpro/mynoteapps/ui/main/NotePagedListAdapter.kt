@@ -34,8 +34,13 @@ class NotePagedListAdapter(private val activity: Activity) : PagedListAdapter<No
     }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        holder.bind(getItem(position) as Note)
+        val notes = getItem(position)
+        if (notes != null) {
+            holder.bind(notes)
+        }
     }
+
+    fun getSwipedData(swipedPosition: Int): Note? = getItem(swipedPosition)
 
     inner class NoteViewHolder(private val binding: ItemNoteBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(note: Note) {
