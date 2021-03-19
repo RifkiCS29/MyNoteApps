@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        itemTouchHelper.attachToRecyclerView(binding?.rvNotes)
 
         _activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
@@ -40,11 +39,15 @@ class MainActivity : AppCompatActivity() {
         mainViewModel = obtainViewModel(this@MainActivity)
         mainViewModel.getAllNotes(SortUtils.LATEST).observe(this, noteObserver)
 
+        noteAddUpdateViewModel = obtainAddUpdateViewModel(this@MainActivity)
+
         adapter = NotePagedListAdapter(this@MainActivity)
 
         binding?.rvNotes?.layoutManager = LinearLayoutManager(this)
         binding?.rvNotes?.setHasFixedSize(true)
         binding?.rvNotes?.adapter = adapter
+
+        itemTouchHelper.attachToRecyclerView(binding?.rvNotes)
 
         binding?.fabAdd?.setOnClickListener { view ->
             if (view.id == R.id.fab_add) {
@@ -76,6 +79,11 @@ class MainActivity : AppCompatActivity() {
         return ViewModelProvider(activity, factory).get(MainViewModel::class.java)
     }
 
+    private fun obtainAddUpdateViewModel(activity: AppCompatActivity): NoteAddUpdateViewModel {
+        val factory = ViewModelFactory.getInstance(activity.application)
+        return ViewModelProvider(activity, factory).get(NoteAddUpdateViewModel::class.java)
+    }
+
     private val noteObserver = Observer<PagedList<Note>> { listNotes ->
         if (listNotes != null) {
             adapter.submitList(listNotes)
@@ -90,6 +98,8 @@ class MainActivity : AppCompatActivity() {
             R.id.action_random -> sort = SortUtils.RANDOM
         }
         mainViewModel.getAllNotes(sort).observe(this, noteObserver)
+        item.isChecked = true
+
         return super.onOptionsItemSelected(item)
     }
 
@@ -105,13 +115,13 @@ class MainActivity : AppCompatActivity() {
         override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean = true
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//            if (binding?.root != null) {
-//                val swipedPosition = viewHolder.adapterPosition
-//                val noteEntity = adapter.getSwipedData(swipedPosition)
-//                noteEntity?.let { noteAddUpdateViewModel.delete(it) }
-//
-//                showSnackbarMessage(getString(R.string.deleted))
-//            }
+            if (binding?.root != null) {
+                val swipedPosition = viewHolder.adapterPosition
+                val noteEntity = adapter.getSwipedData(swipedPosition)
+                noteEntity?.let { noteAddUpdateViewModel.delete(it) }
+
+                showSnackbarMessage(getString(R.string.deleted))
+            }
         }
     })
 
